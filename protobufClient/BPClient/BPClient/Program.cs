@@ -29,7 +29,13 @@ namespace SocketClient
         public string Message;
     }
 
-
+    [ProtoContract]
+    public class TestDataTable
+    {
+        [ProtoMember(1)]
+        public NetModel[] Data = new NetModel[0];
+    }  
+  
     public partial class ClientMain 
     {
         //创建 1个客户端套接字 和1个负责监听服务端请求的线程  
@@ -37,9 +43,24 @@ namespace SocketClient
         static Thread threadclientSend = null;
         static Socket socketclient = null;
 
+       
+                   
+
         public static void Main(string[] args)
         {
 
+            // Serialize<TestDataTable>();
+
+            NetModel item = new NetModel() { ID = 1, Commit = "LanOu", Message = "Unity" };
+            NetModel item2 = new NetModel() { ID = 2, Commit = "2f", Message = "2msg" };
+            TestDataTable tb = new TestDataTable();
+            NetModel[] items = { item, item2 };
+            tb.Data = items;
+
+             byte[] dtb= Serialize<TestDataTable>(tb);
+
+             TestDataTable tb2 = new TestDataTable();
+             tb2 = DeSerialize<TestDataTable>(dtb, dtb.Length);
             //定义一个套接字监听  
             socketclient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             //获取文本框中的IP地址  
@@ -71,40 +92,26 @@ namespace SocketClient
             {
                 try
                 {
-
-             
                     //定义一个1M的内存缓冲区，用于临时性存储接收到的消息  
                     byte[] arrRecvmsg = new byte[1024];
-
                     //将客户端套接字接收到的数据存入内存缓冲区，并获取长度  
                     int length = socketclient.Receive(arrRecvmsg);
-
                     NetModel netModel = DeSerialize<NetModel>(arrRecvmsg,length);
-
                     //接受的消息 
-                    Console.WriteLine("服务器:" + GetCurrentTime() + "\r\n" + netModel.Message + "\r\n\n");
-                   
+                    Console.WriteLine("服务器:" + GetCurrentTime() + "\r\n" + netModel.Message + "\r\n\n");                  
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("远程服务器已经中断连接" + "\r\n\n");
-                  
+                    Debug.WriteLine("远程服务器已经中断连接" + "\r\n\n");                
                     break;
                 }
-
-
-
-            
             }
         }
 
 
-
          static  void sendMsg()
         {
-            //发送的消息 
-            
-                
+            //发送的消息               
                   try
                   {
                       Console.ReadKey();
