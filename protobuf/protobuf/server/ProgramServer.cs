@@ -30,21 +30,56 @@ namespace SocketServerAcceptMultipleClient
             socketwatch.Bind(point);
             //将套接字的监听队列长度限制为20  
             socketwatch.Listen(20);
-
             //负责监听客户端的线程:创建一个监听线程  
             Thread threadwatch = new Thread(watchconnecting);
-
             //将窗体线程设置为与后台同步，随着主线程结束而结束  
             threadwatch.IsBackground = true;
-
             //启动线程     
             threadwatch.Start();
 
+            //心跳线程
+            Thread threadKeepAlive = new Thread(keepAlive);
+            threadKeepAlive.IsBackground = true;
+            threadKeepAlive.Start();
+
             Console.WriteLine("开启监听。。。");
-            Console.WriteLine("点击输入任意数据回车退出程序。。。");
+            Console.WriteLine("任意键退出程序。。。");
             Console.ReadKey();
-            Console.WriteLine("退出监听，并关闭程序。");
+       
         }
+
+
+        //心跳检测，检测是否保持链接
+        static void keepAlive() {
+            while(true){          
+                Dictionary<string, Socket>.ValueCollection items = clientConnectionItems.Values;          
+                //遍历值的集合                    
+                foreach (Socket socketServer in items)         
+                {            
+                    //创建一个内存缓冲区，其大小为1024*1024字节  即1M     
+                    byte[] arrServerRecMsg = new byte[1024];
+                    //将接收到的信息存入到内存缓冲区，并返回其字节数组的长度    
+                    try
+                    {
+                        NetModel result = new NetModel() { ID=0};
+                        socketServer.Send(Serialize<NetModel>(result));
+                    }
+                    catch (Exception ex)
+                    {
+                        clientConnectionItems.Remove(socketServer.RemoteEndPoint.ToString());
+                        //提示套接字监听异常  
+                        Console.WriteLine("客户端" + socketServer.RemoteEndPoint + "已经中断连接" + "\r\n" + ex.Message + "\r\n" + ex.StackTrace + "\r\n");
+                        //关闭之前accept出来的和客户端进行通信的套接字 
+                        socketServer.Close();
+                        break;
+                    }
+                }
+                //
+                Thread.Sleep(60000);
+            }
+         
+        }
+ 
 
         //监听客户端发来的请求  
         static void watchconnecting()
@@ -57,13 +92,12 @@ namespace SocketServerAcceptMultipleClient
                 try
                 {
                     connection = socketwatch.Accept();
-                }
-                catch (Exception ex)
-                {
+                }catch (Exception ex)
+                 {
                     //提示套接字监听异常     
                     Console.WriteLine(ex.Message);
                     break;
-                }
+                 }
 
                 //获取客户端的IP和端口号  
                 IPAddress clientIP = (connection.RemoteEndPoint as IPEndPoint).Address;
@@ -75,9 +109,7 @@ namespace SocketServerAcceptMultipleClient
                 connection.Send(arrSendMsg);
 
                 //客户端网络结点号  
-                string remoteEndPoint = connection.RemoteEndPoint.ToString();
-                //显示与客户端连接情况
-                Console.WriteLine("成功与" + remoteEndPoint + "客户端建立连接！\t\n");
+                string remoteEndPoint = connection.RemoteEndPoint.ToString();                         
                 //添加客户端信息  
                 clientConnectionItems.Add(remoteEndPoint, connection);
 
@@ -87,6 +119,7 @@ namespace SocketServerAcceptMultipleClient
                 //创建一个通信线程      
                 ParameterizedThreadStart pts = new ParameterizedThreadStart(recv);
                 Thread thread = new Thread(pts);
+             
                 //设置为后台线程，随着主线程退出而退出 
                 thread.IsBackground = true;
                 //启动线程     
@@ -104,8 +137,8 @@ namespace SocketServerAcceptMultipleClient
             int i = 0;
             while (true)
             {
-                //创建一个内存缓冲区，其大小为1024*1024字节  即1M     
-                byte[] arrServerRecMsg = new byte[1024 ];
+                //创建一个内存缓冲区，其大小为512字节 
+                byte[] arrServerRecMsg = new byte[512];
                 //将接收到的信息存入到内存缓冲区，并返回其字节数组的长度    
                 try
                 {
@@ -122,9 +155,6 @@ namespace SocketServerAcceptMultipleClient
                 catch (Exception ex)
                 {
                     clientConnectionItems.Remove(socketServer.RemoteEndPoint.ToString());
-
-                    Console.WriteLine("Client Count:" + clientConnectionItems.Count);
-
                     //提示套接字监听异常  
                     Console.WriteLine("客户端" + socketServer.RemoteEndPoint + "已经中断连接" + "\r\n" + ex.Message + "\r\n" + ex.StackTrace + "\r\n");
                     //关闭之前accept出来的和客户端进行通信的套接字 
