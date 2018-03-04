@@ -1,1 +1,6 @@
 D:\protoBufNet\server\protobuf\protobuf\bin\Debug\protobuf.exe.config
+D:\protoBufNet\server\protobuf\protobuf\obj\Debug\protobuf.csprojResolveAssemblyReference.cache
+D:\protoBufNet\server\protobuf\protobuf\bin\Debug\protobuf.exe
+D:\protoBufNet\server\protobuf\protobuf\bin\Debug\protobuf.pdb
+D:\protoBufNet\server\protobuf\protobuf\obj\Debug\protobuf.exe
+D:\protoBufNet\server\protobuf\protobuf\obj\Debug\protobuf.pdb

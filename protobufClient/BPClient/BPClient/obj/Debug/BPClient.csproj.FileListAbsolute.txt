@@ -1,0 +1,5 @@
+D:\protoBufNet\server\protobufClient\BPClient\BPClient\bin\Debug\BPClient.exe.config
+D:\protoBufNet\server\protobufClient\BPClient\BPClient\bin\Debug\BPClient.exe
+D:\protoBufNet\server\protobufClient\BPClient\BPClient\bin\Debug\BPClient.pdb
+D:\protoBufNet\server\protobufClient\BPClient\BPClient\obj\Debug\BPClient.exe
+D:\protoBufNet\server\protobufClient\BPClient\BPClient\obj\Debug\BPClient.pdb
