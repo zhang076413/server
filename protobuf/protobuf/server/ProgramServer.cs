@@ -48,7 +48,6 @@ namespace SocketServerAcceptMultipleClient
        
         }
 
-
         //心跳检测，检测是否保持链接
         static void keepAlive() {
             while(true){          
@@ -80,7 +79,6 @@ namespace SocketServerAcceptMultipleClient
          
         }
  
-
         //监听客户端发来的请求  
         static void watchconnecting()
         {
@@ -203,6 +201,7 @@ namespace SocketServerAcceptMultipleClient
         // 将收到的消息反序列化成对象
         // < returns>The serialize.< /returns>
         // < param name="msg">收到的消息.</param>
+        // < param name="length">z</param> 
         private static T DeSerialize<T>(byte[] msg, int length)
         {
             try
