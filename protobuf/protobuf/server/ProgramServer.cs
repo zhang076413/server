@@ -9,7 +9,6 @@ using System.IO;
 namespace SocketServerAcceptMultipleClient
 {
 
-
     public class SocketServer
     {
         // 创建一个和客户端通信的套接字
@@ -91,11 +90,11 @@ namespace SocketServerAcceptMultipleClient
                 {
                     connection = socketwatch.Accept();
                 }catch (Exception ex)
-                 {
+                {
                     //提示套接字监听异常     
                     Console.WriteLine(ex.Message);
                     break;
-                 }
+               }
 
                 //获取客户端的IP和端口号  
                 IPAddress clientIP = (connection.RemoteEndPoint as IPEndPoint).Address;
