@@ -15,8 +15,8 @@ namespace SocketServerAcceptMultipleClient
         static Socket socketwatch = null;
         //定义一个集合，存储客户端信息
         static Dictionary<string, Socket> clientConnectionItems = new Dictionary<string, Socket> { };
-
-        public static void Main(string[] args)
+        //
+        public static void Main1(string[] args)
         {
             //定义一个套接字用于监听客户端发来的消息，包含三个参数（IP4寻址协议，流式连接，Tcp协议）  
             socketwatch = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -41,8 +41,7 @@ namespace SocketServerAcceptMultipleClient
             threadKeepAlive.IsBackground = true;
             threadKeepAlive.Start();
 
-            Console.WriteLine("开启监听。。。");
-            Console.WriteLine("任意键退出程序。。。");
+            Console.WriteLine("开启监听。。。任意键退出程序。。。");
             Console.ReadKey();
        
         }
@@ -82,32 +81,26 @@ namespace SocketServerAcceptMultipleClient
         static void watchconnecting()
         {
             Socket connection = null;
-
             //持续不断监听客户端发来的请求     
             while (true)
             {
                 try
                 {
+                    
                     connection = socketwatch.Accept();
                 }catch (Exception ex)
                 {
                     //提示套接字监听异常     
                     Console.WriteLine(ex.Message);
-                    break;
+                    continue;
                }
 
                 //获取客户端的IP和端口号  
                 IPAddress clientIP = (connection.RemoteEndPoint as IPEndPoint).Address;
                 int clientPort = (connection.RemoteEndPoint as IPEndPoint).Port;
 
-                //让客户显示"连接成功的"的信息  
-                string sendmsg = "连接服务端成功！\r\n" + "本地IP:" + clientIP + "，本地端口" + clientPort.ToString();
-                byte[] arrSendMsg = Encoding.UTF8.GetBytes(sendmsg);
-                connection.Send(arrSendMsg);
-
-                //客户端网络结点号  
-                string remoteEndPoint = connection.RemoteEndPoint.ToString();                         
-                //添加客户端信息  
+               // 添加客户端信息             
+                string remoteEndPoint = connection.RemoteEndPoint.ToString();
                 clientConnectionItems.Add(remoteEndPoint, connection);
 
                 //IPEndPoint netpoint = new IPEndPoint(clientIP,clientPort); 
@@ -164,7 +157,7 @@ namespace SocketServerAcceptMultipleClient
         //***********************************************************      
         /// 获取当前系统时间的方法    
         /// 当前时间     
-        static DateTime GetCurrentTime()
+        public  static DateTime GetCurrentTime()
         {
             DateTime currentTime = new DateTime();
             currentTime = DateTime.Now;
@@ -196,7 +189,6 @@ namespace SocketServerAcceptMultipleClient
                 return null;
             }
         }
-
         // 将收到的消息反序列化成对象
         // < returns>The serialize.< /returns>
         // < param name="msg">收到的消息.</param>
@@ -222,7 +214,6 @@ namespace SocketServerAcceptMultipleClient
                 return default(T);
             }
         }
-
         //***********************************************************      
 
 
